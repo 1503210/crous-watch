@@ -1,0 +1,45 @@
+name: Veille logements CROUS
+
+on:
+  schedule:
+    # Toutes les 20 minutes. GitHub peut retarder un peu l'exécution
+    # aux heures de forte charge, c'est normal.
+    - cron: "*/20 * * * *"
+  workflow_dispatch: {}  # permet de lancer manuellement depuis l'onglet Actions
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run scraper
+        env:
+          SEARCH_URL: ${{ vars.SEARCH_URL }}
+          POSTAL_PREFIX: ${{ vars.POSTAL_PREFIX }}
+          COHAB_INCLUDE: ${{ vars.COHAB_INCLUDE }}
+          SURFACE_MIN: ${{ vars.SURFACE_MIN }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+        run: python scraper.py
+
+      - name: Commit et push l'état + le récapitulatif
+        run: |
+          git config user.name "crous-watch-bot"
+          git config user.email "actions@github.com"
+          git add data/state.json docs/index.html
+          git diff --quiet --cached || git commit -m "Mise à jour veille CROUS [skip ci]"
+          git push
