@@ -28,29 +28,28 @@ from bs4 import BeautifulSoup
 # URL de recherche du CROUS. Pour l'obtenir : va sur trouverunlogement.lescrous.fr,
 # choisis la campagne ("Pour l'année prochaine 2026-2027"), filtre si besoin,
 # puis copie l'URL affichée dans la barre d'adresse.
-SEARCH_URL = os.environ.get(
-    "SEARCH_URL",
-    "https://trouverunlogement.lescrous.fr/tools/47/search",
+SEARCH_URL = os.environ.get("SEARCH_URL") or (
+    "https://trouverunlogement.lescrous.fr/tools/47/search"
 )
 
 # Préfixe de code postal à garder (33 = Gironde -> Bordeaux, Pessac, Talence,
 # Gradignan, Mérignac, Lormont, Bègles...). Laisse vide ("") pour ne pas filtrer.
-POSTAL_PREFIX = os.environ.get("POSTAL_PREFIX", "33")
+POSTAL_PREFIX = os.environ.get("POSTAL_PREFIX") or "33"
 
 # Types de cohabitation à garder (un des mots doit apparaître dans la carte).
 # Laisse vide pour ne pas filtrer par type.
 COHAB_INCLUDE = [
     s.strip().lower()
-    for s in os.environ.get("COHAB_INCLUDE", "Individuel").split(",")
+    for s in (os.environ.get("COHAB_INCLUDE") or "Individuel").split(",")
     if s.strip()
 ]
 
 # Surface minimale en m² (0 = pas de filtre). Permet d'exclure les petites
 # chambres si tu ne veux que des vrais studios.
-SURFACE_MIN = float(os.environ.get("SURFACE_MIN", "0"))
+SURFACE_MIN = float(os.environ.get("SURFACE_MIN") or "0")
 
 # Nombre max de pages de résultats à parcourir (sécurité anti-boucle infinie)
-MAX_PAGES = int(os.environ.get("MAX_PAGES", "15"))
+MAX_PAGES = int(os.environ.get("MAX_PAGES") or "15")
 
 STATE_PATH = Path("data/state.json")
 RECAP_PATH = Path("docs/index.html")
