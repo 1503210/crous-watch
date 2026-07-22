@@ -189,9 +189,9 @@ def save_state(state: dict) -> None:
 # --------------------------------------------------------------------------
 
 def send_email(new_listings: list[dict]) -> None:
-    user = os.environ.get("GMAIL_USER")
-    app_password = os.environ.get("GMAIL_APP_PASSWORD")
-    to_addr = os.environ.get("MAIL_TO", user)
+    user = (os.environ.get("GMAIL_USER") or "").strip()
+    app_password = (os.environ.get("GMAIL_APP_PASSWORD") or "").strip().replace(" ", "")
+    to_addr = (os.environ.get("MAIL_TO") or "").strip() or user
 
     if not user or not app_password:
         print("GMAIL_USER / GMAIL_APP_PASSWORD manquants, email non envoyé.", file=sys.stderr)
